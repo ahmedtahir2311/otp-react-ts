@@ -1,13 +1,10 @@
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable react/no-array-index-key */
 import React, { memo, useState, useCallback, CSSProperties } from 'react';
-import SingleInput from './SingleInput';
+
+import SingleInput from './singleInput';
 
 export interface OTPInputProps {
   length: number;
   onChangeOTP: (otp: string) => any;
-
   autoFocus?: boolean;
   isNumberInput?: boolean;
   disabled?: boolean;
@@ -34,16 +31,14 @@ export function OTPInputComponent(props: OTPInputProps) {
   const [activeInput, setActiveInput] = useState(0);
   const [otpValues, setOTPValues] = useState(Array<string>(length).fill(''));
 
-  // Helper to return OTP from inputs
   const handleOtpChange = useCallback(
     (otp: string[]) => {
       const otpValue = otp.join('');
       onChangeOTP(otpValue);
     },
-    [onChangeOTP],
+    [onChangeOTP]
   );
 
-  // Helper to return value with the right type: 'text' or 'number'
   const getRightValue = useCallback(
     (str: string) => {
       let changedValue = str;
@@ -54,10 +49,9 @@ export function OTPInputComponent(props: OTPInputProps) {
 
       return Number(changedValue) >= 0 ? changedValue : '';
     },
-    [isNumberInput],
+    [isNumberInput]
   );
 
-  // Change OTP value at focussing input
   const changeCodeAtFocus = useCallback(
     (str: string) => {
       const updatedOTPValues = [...otpValues];
@@ -65,16 +59,15 @@ export function OTPInputComponent(props: OTPInputProps) {
       setOTPValues(updatedOTPValues);
       handleOtpChange(updatedOTPValues);
     },
-    [activeInput, handleOtpChange, otpValues],
+    [activeInput, handleOtpChange, otpValues]
   );
 
-  // Focus `inputIndex` input
   const focusInput = useCallback(
     (inputIndex: number) => {
       const selectedIndex = Math.max(Math.min(length - 1, inputIndex), 0);
       setActiveInput(selectedIndex);
     },
-    [length],
+    [length]
   );
 
   const focusPrevInput = useCallback(() => {
@@ -85,15 +78,13 @@ export function OTPInputComponent(props: OTPInputProps) {
     focusInput(activeInput + 1);
   }, [activeInput, focusInput]);
 
-  // Handle onFocus input
   const handleOnFocus = useCallback(
     (index: number) => () => {
       focusInput(index);
     },
-    [focusInput],
+    [focusInput]
   );
 
-  // Handle onChange value for each input
   const handleOnChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const val = getRightValue(e.currentTarget.value);
@@ -104,15 +95,13 @@ export function OTPInputComponent(props: OTPInputProps) {
       changeCodeAtFocus(val);
       focusNextInput();
     },
-    [changeCodeAtFocus, focusNextInput, getRightValue],
+    [changeCodeAtFocus, focusNextInput, getRightValue]
   );
 
-  // Handle onBlur input
   const onBlur = useCallback(() => {
     setActiveInput(-1);
   }, []);
 
-  // Handle onKeyDown input
   const handleOnKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       const pressedKey = e.key;
@@ -147,7 +136,7 @@ export function OTPInputComponent(props: OTPInputProps) {
         }
       }
     },
-    [activeInput, changeCodeAtFocus, focusNextInput, focusPrevInput, otpValues],
+    [activeInput, changeCodeAtFocus, focusNextInput, focusPrevInput, otpValues]
   );
 
   const handleOnPaste = useCallback(
@@ -172,9 +161,10 @@ export function OTPInputComponent(props: OTPInputProps) {
         });
         setOTPValues(updatedOTPValues);
         setActiveInput(Math.min(nextFocusIndex + 1, length - 1));
+        handleOtpChange(updatedOTPValues);
       }
     },
-    [activeInput, getRightValue, length, otpValues],
+    [activeInput, getRightValue, length, otpValues, handleOtpChange]
   );
 
   return (
@@ -204,3 +194,4 @@ export function OTPInputComponent(props: OTPInputProps) {
 
 const OTPInput = memo(OTPInputComponent);
 export default OTPInput;
+
